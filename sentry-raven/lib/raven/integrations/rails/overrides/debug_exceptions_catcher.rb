@@ -2,7 +2,7 @@ module Raven
   class Rails
     module Overrides
       module DebugExceptionsCatcher
-        def render_exception(env_or_request, exception)
+        def render_exception(env_or_request, exception, _wrapper = nil)
           begin
             env = env_or_request.respond_to?(:env) ? env_or_request.env : env_or_request
             Raven::Rack.capture_exception(exception, env)
