@@ -5,7 +5,9 @@ module Raven
   class Rails
     class BacktraceCleaner < ActiveSupport::BacktraceCleaner
       APP_DIRS_PATTERN = /\A(?:\.\/)?(?:app|config|lib|test|\(\w*\))/.freeze
-      RENDER_TEMPLATE_PATTERN = /:in `.*_\w+_{2,3}\d+_\d+'/.freeze
+      # Backtick on Ruby <= 3.3, single quote on Ruby >= 3.4 -- see
+      # Raven::Backtrace::Line::RUBY_INPUT_FORMAT.
+      RENDER_TEMPLATE_PATTERN = /:in [`'].*_\w+_{2,3}\d+_\d+'/.freeze
 
       def initialize
         super

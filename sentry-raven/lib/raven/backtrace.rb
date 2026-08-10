@@ -9,10 +9,17 @@ module Raven
     class Line
       RB_EXTENSION = ".rb"
       # regexp (optional leading X: on windows, or JRuby9000 class-prefix)
+      #
+      # The method label is delimited by a backtick on Ruby <= 3.3 (`:in \`foo'`)
+      # and by a single quote on Ruby >= 3.4 (`:in 'Object#foo'`), so accept
+      # either opening delimiter. Getting this wrong is silent: every line falls
+      # through to JAVA_INPUT_FORMAT, misses there too, and `nil.to_a` yields an
+      # empty match, so frames are built with a nil file and then dropped by
+      # Event#stacktrace_interface_from -- events arrive with no stacktrace at all.
       RUBY_INPUT_FORMAT = /
         ^ \s* (?: [a-zA-Z]: | uri:classloader: )? ([^:]+ | <.*>):
         (\d+)
-        (?: :in \s `([^']+)')?$
+        (?: :in \s [`'] ([^']+) ')? $
       /x.freeze
 
       # org.jruby.runtime.callsite.CachingCallSite.call(CachingCallSite.java:170)
